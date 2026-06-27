@@ -329,7 +329,6 @@ const LoginPage = () => {
             {" & "}
             <a href="/privacy" className="hover:text-orange-500 transition-colors">Privacy</a>
           </p>
-
         </div>
       </div>
     </div>
