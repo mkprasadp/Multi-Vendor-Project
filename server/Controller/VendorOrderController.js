@@ -9,19 +9,13 @@ import Order from "../Model/MainOrder.js";
 export const getVendorOrders = async (req, res) => {
     try {
         const { vendorId } = req.params;
-        const orders = await VendorOrder.find({vendor: vendorId}).populate("user","name email").sort({ createdAt:-1 });
-        return res.status(200).json({
-            success:true,
-            orders
-        });
+        const filter = vendorId ? { vendor: vendorId } : {}; // no vendorId -> all orders (admin dashboard)
+        const orders = await VendorOrder.find(filter)
+            .populate("user", "name email")
+            .sort({ createdAt: -1 });
+        return res.status(200).json({ success: true, orders });
     } catch (error) {
-
-        return res.status(500).json({
-
-            success:false,
-
-            message:error.message
-        });
+        return res.status(500).json({ success: false, message: error.message });
     }
 };
 
