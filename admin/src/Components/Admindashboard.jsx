@@ -34,7 +34,9 @@ import {
 const API_BASE =
   (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_BASE_URL) ||
   (typeof process !== "undefined" && process.env && process.env.REACT_APP_API_BASE_URL) ||
-  "https://multi-vendor-project-2fua.vercel.app/api";
+  (typeof window !== "undefined" && window.location.hostname === "localhost"
+    ? "http://localhost:5000/api"
+    : "https://multi-vendor-project-2fua.vercel.app/api");
 
 const ENDPOINTS = {
   users: `${API_BASE}/user/getallusers`,
@@ -648,7 +650,7 @@ export default function AdminDashboard() {
               icon={Store}
               status={vendors.status}
               error={vendors.error}
-              displayValue={vendors.list?.length?.toLocaleString()}
+              displayValue={vendors.list?.length.toLocaleString()}
             />
             <StatCard label="Products" icon={Package} status={products.status} error={products.error} displayValue={products.count?.toLocaleString()} />
             <StatCard
@@ -656,7 +658,7 @@ export default function AdminDashboard() {
               icon={ClipboardList}
               status={orders.status}
               error={orders.error}
-              displayValue={orders.list?.length?.toLocaleString()}
+              displayValue={orders.list?.length.toLocaleString()}
             />
             <StatCard
               label="Pending Orders"
