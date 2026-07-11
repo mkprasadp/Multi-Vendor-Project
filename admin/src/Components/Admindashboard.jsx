@@ -648,7 +648,7 @@ export default function AdminDashboard() {
               icon={Store}
               status={vendors.status}
               error={vendors.error}
-              displayValue={vendors.list?.length.toLocaleString()}
+              displayValue={vendors.list?.length?.toLocaleString()}
             />
             <StatCard label="Products" icon={Package} status={products.status} error={products.error} displayValue={products.count?.toLocaleString()} />
             <StatCard
@@ -656,7 +656,7 @@ export default function AdminDashboard() {
               icon={ClipboardList}
               status={orders.status}
               error={orders.error}
-              displayValue={orders.list?.length.toLocaleString()}
+              displayValue={orders.list?.length?.toLocaleString()}
             />
             <StatCard
               label="Pending Orders"
