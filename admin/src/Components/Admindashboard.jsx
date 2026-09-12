@@ -26,6 +26,7 @@ import {
   AlertTriangle,
   RefreshCw,
 } from "lucide-react";
+import VendorList from "./VendorList";
 
 /* ===========================================================
    API CONFIG — matches your actual mounted routes in app.js
@@ -383,20 +384,24 @@ function CustomTooltip({ active, payload, label }) {
   );
 }
 
+// Each item now maps to a "page" key. Only Dashboard and Vendors are wired to
+// real views right now — the rest are placeholders until their pages exist,
+// but they're still clickable so the sidebar behaves consistently.
 const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", active: true },
-  { icon: Store, label: "Vendors" },
-  { icon: ShoppingBag, label: "Products" },
-  { icon: ClipboardList, label: "Orders" },
-  { icon: Wallet, label: "Payouts" },
-  { icon: Settings, label: "Settings" },
+  { icon: LayoutDashboard, label: "Dashboard", page: "dashboard" },
+  { icon: Store, label: "Vendors", page: "vendors" },
+  { icon: ShoppingBag, label: "Products", page: "products" },
+  { icon: ClipboardList, label: "Orders", page: "orders" },
+  { icon: Wallet, label: "Payouts", page: "payouts" },
+  { icon: Settings, label: "Settings", page: "settings" },
 ];
 
 const toneDot = { good: "#3E8F63", warn: "#E7A83C", bad: "#C1503F" };
 const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export default function AdminDashboard() {
-  const [navOpen, setNavOpen] = useState(false);
+  const [navOpen, setNavOpen] = useState(true);
+  const [page, setPage] = useState("dashboard");
   const { resources, reload } = useDashboardData();
   const { users, vendors, products, orders } = resources;
   const vendorEarnings = useVendorEarnings(vendors);
@@ -504,27 +509,35 @@ export default function AdminDashboard() {
           )}
         </div>
         <nav style={{ padding: "14px 10px", display: "flex", flexDirection: "column", gap: 2 }}>
-          {navItems.map(({ icon: Icon, label, active }) => (
-            <div
-              key={label}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                padding: "9px 12px",
-                borderRadius: 8,
-                fontSize: 13.5,
-                fontWeight: 600,
-                whiteSpace: "nowrap",
-                cursor: "pointer",
-                color: active ? "#171C2B" : "#B6BACB",
-                background: active ? "#E7A83C" : "transparent",
-              }}
-            >
-              <Icon size={16} strokeWidth={2} />
-              {navOpen && label}
-            </div>
-          ))}
+          {navItems.map(({ icon: Icon, label, page: itemPage }) => {
+            const active = page === itemPage;
+            return (
+              <button
+                key={label}
+                onClick={() => setPage(itemPage)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: "9px 12px",
+                  borderRadius: 8,
+                  fontSize: 13.5,
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                  cursor: "pointer",
+                  color: active ? "#171C2B" : "#B6BACB",
+                  background: active ? "#E7A83C" : "transparent",
+                  border: "none",
+                  width: "100%",
+                  textAlign: "left",
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                <Icon size={16} strokeWidth={2} />
+                {navOpen && label}
+              </button>
+            );
+          })}
         </nav>
       </aside>
 
@@ -552,88 +565,109 @@ export default function AdminDashboard() {
               <Menu size={19} />
             </button>
             <h1 style={{ margin: 0, fontFamily: "Fraunces, serif", fontSize: 19, fontWeight: 600, color: "#171C2B" }}>
-              Marketplace overview
+              {navItems.find((n) => n.page === page)?.label === "Dashboard"
+                ? "Marketplace overview"
+                : navItems.find((n) => n.page === page)?.label}
             </h1>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                background: "#F3F2EF",
-                border: "1px solid #E4E0D4",
-                borderRadius: 8,
-                padding: "7px 12px",
-                width: 220,
-              }}
-            >
-              <Search size={15} color="#8B90A0" />
-              <span style={{ fontSize: 13, color: "#8B90A0" }}>Search anything…</span>
-            </div>
-            <button
-              onClick={reload}
-              disabled={anyLoading}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: 12.5,
-                fontWeight: 600,
-                color: "#171C2B",
-                background: "#F3F2EF",
-                border: "1px solid #E4E0D4",
-                borderRadius: 8,
-                padding: "6px 12px",
-                cursor: anyLoading ? "default" : "pointer",
-                opacity: anyLoading ? 0.6 : 1,
-              }}
-            >
-              <RefreshCw size={13} className={anyLoading ? "spin" : ""} />
-              Refresh
-            </button>
-            <button
-              style={{ position: "relative", border: "none", background: "transparent", cursor: "pointer", color: "#171C2B", display: "flex" }}
-              aria-label="Notifications"
-            >
-              <Bell size={18} />
-              <span
-                style={{
-                  position: "absolute",
-                  top: -2,
-                  right: -2,
-                  width: 7,
-                  height: 7,
-                  borderRadius: "50%",
-                  background: "#C1503F",
-                  border: "1.5px solid #FFFFFF",
-                }}
-              />
-            </button>
-            <div style={{ display: "flex", alignItems: "center", gap: 9, cursor: "pointer" }}>
+          {page === "dashboard" && (
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
               <div
                 style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: "50%",
-                  background: "#171C2B",
-                  color: "#E7A83C",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
-                  fontFamily: "Fraunces, serif",
-                  fontWeight: 600,
-                  fontSize: 13,
+                  gap: 8,
+                  background: "#F3F2EF",
+                  border: "1px solid #E4E0D4",
+                  borderRadius: 8,
+                  padding: "7px 12px",
+                  width: 220,
                 }}
               >
-                A
+                <Search size={15} color="#8B90A0" />
+                <span style={{ fontSize: 13, color: "#8B90A0" }}>Search anything…</span>
               </div>
-              <span style={{ fontSize: 13.5, fontWeight: 600 }}>Admin</span>
+              <button
+                onClick={reload}
+                disabled={anyLoading}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  color: "#171C2B",
+                  background: "#F3F2EF",
+                  border: "1px solid #E4E0D4",
+                  borderRadius: 8,
+                  padding: "6px 12px",
+                  cursor: anyLoading ? "default" : "pointer",
+                  opacity: anyLoading ? 0.6 : 1,
+                }}
+              >
+                <RefreshCw size={13} className={anyLoading ? "spin" : ""} />
+                Refresh
+              </button>
+              <button
+                style={{ position: "relative", border: "none", background: "transparent", cursor: "pointer", color: "#171C2B", display: "flex" }}
+                aria-label="Notifications"
+              >
+                <Bell size={18} />
+                <span
+                  style={{
+                    position: "absolute",
+                    top: -2,
+                    right: -2,
+                    width: 7,
+                    height: 7,
+                    borderRadius: "50%",
+                    background: "#C1503F",
+                    border: "1.5px solid #FFFFFF",
+                  }}
+                />
+              </button>
+              <div style={{ display: "flex", alignItems: "center", gap: 9, cursor: "pointer" }}>
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: "50%",
+                    background: "#171C2B",
+                    color: "#E7A83C",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontFamily: "Fraunces, serif",
+                    fontWeight: 600,
+                    fontSize: 13,
+                  }}
+                >
+                  A
+                </div>
+                <span style={{ fontSize: 13.5, fontWeight: 600 }}>Admin</span>
+              </div>
             </div>
-          </div>
+          )}
         </header>
 
         {/* CONTENT */}
+        {page === "vendors" && (
+          <div style={{ flex: 1, overflowY: "auto" }}>
+            <VendorList />
+          </div>
+        )}
+
+        {page !== "dashboard" && page !== "vendors" && (
+          <main style={{ padding: 22, flex: 1 }}>
+            <TicketCard style={{ padding: 40, textAlign: "center" }}>
+              <p style={{ margin: 0, fontSize: 14, color: "#9AA0AF" }}>
+                {navItems.find((n) => n.page === page)?.label} page isn't built yet.
+              </p>
+            </TicketCard>
+          </main>
+        )}
+
+        {page === "dashboard" && (
         <main style={{ padding: 22, overflowY: "auto", flex: 1 }}>
           {/* STAT CARDS */}
           <div
@@ -755,7 +789,10 @@ export default function AdminDashboard() {
             <TicketCard style={{ padding: 20 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
                 <h2 style={{ margin: 0, fontFamily: "Fraunces, serif", fontSize: 16.5, fontWeight: 600 }}>Latest orders</h2>
-                <span style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 12.5, fontWeight: 600, color: "#E7A83C", cursor: "pointer" }}>
+                <span
+                  onClick={() => setPage("orders")}
+                  style={{ display: "flex", alignItems: "center", gap: 2, fontSize: 12.5, fontWeight: 600, color: "#E7A83C", cursor: "pointer" }}
+                >
                   View all ({totalOrders ?? "—"}) <ChevronRight size={14} />
                 </span>
               </div>
@@ -886,6 +923,7 @@ export default function AdminDashboard() {
             </TicketCard>
           </div>
         </main>
+        )}
       </div>
 
       <style>{`

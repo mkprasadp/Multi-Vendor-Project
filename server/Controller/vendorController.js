@@ -73,6 +73,25 @@ export const loginvendor = async(req,res)=>{
                 message:"Invalid credentials"
             })
         }
+        if (vendor.status === "pending") {
+            return res.status(403).json({
+                success: false,
+                message: "Your account is pending approval. Please wait for admin verification.",
+            });
+        }
+
+        if (vendor.status === "suspended") {
+            return res.status(403).json({
+                success: false,
+                message: "Your account has been suspended. Please contact support.",
+            });
+        }
+
+        if (vendor.status !== "approved") {
+            // catch-all safety net for any future/unknown status values
+            return res.status(403).json({ success: false, message: "Account not eligible to log in." });
+        }
+
         const token = jwt.sign({id:vendor._id},SECRET,{expiresIn:"1d"});
         return res.json({
             success:true,
