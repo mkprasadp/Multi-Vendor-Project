@@ -4,33 +4,38 @@ pipeline {
 
     stages {
 
+        stage('Checkout') {
+            steps {
+                echo 'Getting code from GitHub...'
+            }
+        }
+
         stage('Docker Check') {
             steps {
                 bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" --version'
             }
         }
 
-        stage('Docker Compose Build') {
+        stage('Docker Build') {
             steps {
-                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" compose build'
+                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t manikantaprasad123/myapp:latest .'
             }
         }
 
-        stage('Docker Compose Up') {
+        stage('Docker Push') {
             steps {
-                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" compose up -d'
+                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" push manikantaprasad123/myapp:latest'
             }
         }
     }
 
     post {
-
         success {
-            echo 'Docker Compose deployment successful!'
+            echo 'Docker image pushed successfully!'
         }
 
         failure {
-            echo 'Docker Compose deployment failed!'
+            echo 'Pipeline failed!'
         }
     }
 }
