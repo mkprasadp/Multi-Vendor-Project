@@ -10,15 +10,21 @@ pipeline {
             }
         }
 
+        stage('Docker Check') {
+            steps {
+                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" --version'
+            }
+        }
+
         stage('Docker Build') {
             steps {
-                bat 'docker build -t manikantaprasad123/myapp:latest .'
+                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t manikantaprasad123/myapp:latest .'
             }
         }
 
         stage('Docker Push') {
             steps {
-                bat 'docker push manikantaprasad123/myapp:latest'
+                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" push manikantaprasad123/myapp:latest'
             }
         }
     }
