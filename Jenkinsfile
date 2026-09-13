@@ -23,15 +23,6 @@ pipeline {
                 bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker-compose.exe" build'
             }
         }
-
-        stage('Deploy') {
-            steps {
-                echo 'Starting MutiVendor application...'
-
-                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker-compose.exe" up -d'
-            }
-        }
-        
         
         stage('Deploy') {    
             steps {
