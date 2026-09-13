@@ -6,7 +6,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Getting code from GitHub...'
+                echo 'Checking out latest code from GitHub...'
             }
         }
 
@@ -16,26 +16,39 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
+        stage('Docker Compose Build') {
             steps {
-                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t manikantaprasad123/myapp:latest .'
+                echo 'Building all MutiVendor services...'
+
+                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker-compose.exe" build'
             }
         }
 
-        stage('Docker Push') {
+        stage('Deploy') {
             steps {
-                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" push manikantaprasad123/myapp:latest'
+                echo 'Starting MutiVendor application...'
+
+                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker-compose.exe" up -d'
+            }
+        }
+
+        stage('Verify Containers') {
+            steps {
+                echo 'Checking running containers...'
+
+                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" ps'
             }
         }
     }
 
     post {
+
         success {
-            echo 'Docker image pushed successfully!'
+            echo 'MutiVendor deployed successfully!'
         }
 
         failure {
-            echo 'Pipeline failed!'
+            echo 'Deployment failed!'
         }
     }
 }
