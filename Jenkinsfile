@@ -1,34 +1,35 @@
 pipeline {
+
     agent any
 
     stages {
 
         stage('Checkout') {
             steps {
-                echo 'Getting project from GitHub...'
+                echo 'Getting code from GitHub...'
             }
         }
 
-        stage('Test Jenkins') {
+        stage('Docker Build') {
             steps {
-                echo 'Jenkins successfully connected to my project!'
+                bat 'docker build -t manikantaprasad123/myapp:latest .'
             }
         }
 
-        stage('Build') {
+        stage('Docker Push') {
             steps {
-                echo 'Building project...'
+                bat 'docker push manikantaprasad123/myapp:latest'
             }
         }
     }
 
     post {
         success {
-            echo 'CI Pipeline Successful!'
+            echo 'Docker image pushed successfully!'
         }
 
         failure {
-            echo 'CI Pipeline Failed!'
+            echo 'Pipeline failed!'
         }
     }
 }
