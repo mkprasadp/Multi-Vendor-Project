@@ -31,6 +31,19 @@ pipeline {
                 bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker-compose.exe" up -d'
             }
         }
+        
+        
+        stage('Deploy') {    
+            steps {
+                echo 'Stopping old containers...'
+
+                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker-compose.exe" down'
+
+                echo 'Starting new containers...'
+
+                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker-compose.exe" up -d'
+            }
+        }
 
         stage('Verify Containers') {
             steps {
