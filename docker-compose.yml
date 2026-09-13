@@ -1,47 +1,41 @@
-version: '3.8'
+pipeline {
 
-services:
-  nginx:
-    image: nginx:latest
-    container_name: nginx_lb
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - server
+    agent any
 
-  server:
-    build:
-      context: ./server
-    environment:
-      - NODE_ENV=production
-    expose:
-      - "5000"
-    restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/api"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+    stages {
 
-  client:
-    build: ./client
-    ports:
-      - "5173:80"
-    depends_on:
-      - nginx
+        stage('Checkout') {
+            steps {
+                echo 'Getting code from GitHub...'
+            }
+        }
 
-  vendor:
-    build: ./vendor
-    ports:
-      - "5174:80"
-    depends_on:
-      - nginx
+        stage('Docker Check') {
+            steps {
+                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" --version'
+            }
+        }
 
-  admin:
-    build: ./admin
-    ports:
-      - "5175:80"
-    depends_on:
-      - nginx
+        stage('Docker Build') {
+            steps {
+                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t manikantaprasad123/myapp:latest .'
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                bat '"C:\\Users\\manik\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" push manikantaprasad123/myapp:latest'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Docker image pushed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
